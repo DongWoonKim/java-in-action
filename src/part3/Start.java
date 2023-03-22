@@ -4,6 +4,7 @@ import enums.Type;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static enums.Type.*;
@@ -218,10 +219,36 @@ public class Start {
 
     }
 
+    public void exam20() {
+        int sum = menu.stream()
+                .mapToInt(Dish::getCalories)
+                .sum();
+
+        System.out.println(sum);
+    }
+
+    public void exam21() {
+
+        OptionalInt maxCals = menu.stream()
+                .mapToInt(Dish::getCalories)
+                .max();
+
+        System.out.println(maxCals.orElse(-1));
+
+    }
+
+    public void exam22() {
+
+        IntStream evenNums = IntStream.rangeClosed(1, 100)
+                .filter(n -> n % 2 == 0);
+        System.out.println(evenNums.count());
+
+    }
+
     public static void main(String[] args) {
 
         Start start = new Start();
-        start.exam19();
+        start.exam22();
 
     }
 
