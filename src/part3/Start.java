@@ -8,8 +8,12 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static enums.Type.*;
+import static java.util.stream.Collectors.*;
+import static part3.Start.CalLevels.*;
 
 public class Start {
+
+    enum CalLevels { DIET, NORMAL, FAT }
 
     public static final List<Dish> menu = Arrays.asList(
             new Dish("pork", false, 800, MEAT),
@@ -238,17 +242,177 @@ public class Start {
     }
 
     public void exam22() {
-
         IntStream evenNums = IntStream.rangeClosed(1, 100)
                 .filter(n -> n % 2 == 0);
         System.out.println(evenNums.count());
+    }
+
+    public void exam23() {
+        IntStream.rangeClosed(1, 100)
+                        .boxed()
+                                .flatMap(
+                                        a -> IntStream.rangeClosed(a, 100)
+                                                .filter(b-> Math.sqrt(a*a + b*b) % 1 == 0)
+                                                .mapToObj(b -> new int[]{a, b, (int)Math.sqrt( (a*a) + (b*b) )})
+                                ).forEach( v -> System.out.println( v[0] + " : " + v[1] + " : " + v[2] ));
+    }
+
+    public void exam24() {
+        Stream<String> stream = Stream.of("Modern", "Java", "In", "Action");
+        stream.forEach(System.out::println);
+    }
+
+    public void exam25() {
+
+        String home = System.getProperty("home");
+        System.out.println(home);
+
+        Stream<String> home1 = Stream.ofNullable(System.getProperty("home"));
+        home1.forEach(System.out::println);
+
+    }
+
+    public void exam26() {
+        Stream.iterate(0, n->n+2)
+                .limit(10)
+                .forEach(System.out::println);
+    }
+
+    public void exam27() {
+        Stream.iterate( new int[]{0, 1}, ar-> new int[]{ar[1], ar[0] + ar[1]} )
+                .limit(20)
+                .forEach( t -> System.out.println( "( " + t[0] + ", " + t[1] + " )") );
+    }
+
+    public void exam28() {
+        Stream.iterate( 0, n->n<100, n->n+4 )
+                .forEach(System.out::println);
+    }
+
+    public void exam29() {
+        Stream.iterate(0, n->n+4)
+                .filter( n->n<100 )
+                .forEach(System.out::println);
+    }
+
+    public void exam30() {
+        Stream.iterate(0, n->n+4)
+                .takeWhile(n->n<100)
+                .forEach(System.out::println);
+    }
+
+    public void exam31() {
+        Stream.generate(Math::random)
+                .limit(10)
+                .forEach(System.out::println);
+    }
+
+    public void exam32() {
+        System.out.println(menu.stream().count());
+    }
+
+    public void exam33() {
+        Comparator<Dish> comparing = Comparator.comparing(Dish::getCalories);
+        menu.stream()
+                .collect( Collectors.maxBy(comparing) )
+                .ifPresent(System.out::println);
+    }
+
+    public void exam34() {
+        int collect = menu.stream()
+                .collect(Collectors.summingInt(Dish::getCalories));
+        System.out.println(collect);
+
+        double collect1 = menu.stream()
+                .collect(Collectors.averagingInt(Dish::getCalories));
+        System.out.println((int)collect1);
+    }
+
+    public void exam35() {
+        IntSummaryStatistics collect = menu.stream()
+                .collect(Collectors.summarizingInt(Dish::getCalories));
+
+        System.out.println(collect);
+    }
+
+    public void exam36() {
+        String collect = menu.stream()
+                .map(Dish::getName)
+                .collect(Collectors.joining(", "));
+        System.out.println(collect);
+    }
+
+    public void exam37() {
+        int sumVal = menu.stream()
+                .collect(reducing(0, Dish::getCalories, (i, j) -> i + j));
+        System.out.println(sumVal);
+    }
+
+    public void exam38() {
+        menu.stream()
+                .reduce((d1, d2) -> d1.getCalories() > d2.getCalories() ? d1 : d2)
+                .ifPresent(dish -> System.out.println(dish));
+    }
+
+    public void exam39() {
+        int sumVal = menu.stream()
+                .collect(
+                        reducing(
+                                0, Dish::getCalories, Integer::max
+                        )
+                );
+        System.out.println(sumVal);
+    }
+
+    public void exam40() {
+        int resVal = menu.stream()
+                .map(Dish::getCalories)
+                .reduce(Integer::sum).get();
+        System.out.println(resVal);
+
+        int sumVal = menu.stream()
+                .mapToInt(Dish::getCalories)
+                .sum();
+        System.out.println(sumVal);
+    }
+
+    public void exam41() {
+        Map<Type, List<Dish>> dishesType = menu.stream()
+                .collect(Collectors.groupingBy(Dish::getType));
+
+        System.out.println(dishesType);
+    }
+
+    public void exam42() {
+        Map<CalLevels, List<Dish>> resMap = menu.stream()
+                .collect(
+                        Collectors.groupingBy(dish -> {
+                            if (dish.getCalories() <= 400) return DIET;
+                            else if (dish.getCalories() <= 700) return NORMAL;
+                            else return FAT;
+                        })
+                );
+        System.out.println(resMap);
+    }
+
+    public void exam43() {
+        Map<Type, List<Dish>> collect = menu.stream()
+                .filter(dish -> dish.getCalories() > 500)
+                .collect(groupingBy(Dish::getType));
+
+        System.out.println(collect);
+
+        Map<Type, List<Dish>> collect1 = menu.stream()
+                .collect(groupingBy(Dish::getType, filtering(dish -> dish.getCalories() > 500, toList())));
+
+        System.out.println(collect1);
 
     }
 
     public static void main(String[] args) {
 
         Start start = new Start();
-        start.exam22();
+        start.exam43();
 
     }
 
