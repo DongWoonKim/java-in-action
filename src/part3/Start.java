@@ -409,11 +409,147 @@ public class Start {
 
     }
 
+    public void exam44() {
+
+        Map<Type, Map<CalLevels, List<Dish>>> dishesByTypeCalLevel = menu.stream()
+                .collect(
+                        groupingBy(Dish::getType,
+                                groupingBy(dish -> {
+                                    if (dish.getCalories() <= 400) return DIET;
+                                    else if (dish.getCalories() <= 700) return NORMAL;
+                                    else return FAT;
+                                })
+                        )
+                );
+
+        System.out.println(dishesByTypeCalLevel);
+    }
+
+    public void exam45() {
+
+        Map<Type, Long> resMap = menu.stream().collect(
+                groupingBy(Dish::getType, Collectors.counting())
+        );
+
+        System.out.println(resMap);
+
+    }
+
+    public void exam46() {
+
+        Map<Type, Optional<Dish>> resMap = menu.stream()
+                .collect(groupingBy(Dish::getType, maxBy(Comparator.comparing(Dish::getCalories))));
+
+        System.out.println(resMap);
+
+    }
+
+    public void exam47() {
+
+        Map<Type, Dish> resMap = menu.stream()
+                .collect(
+                        groupingBy(Dish::getType
+                                , collectingAndThen(
+                                        maxBy(Comparator.comparing(Dish::getCalories))
+                                        , Optional::get
+                                )
+                        )
+                );
+
+        System.out.println(resMap);
+
+    }
+
+    public void exam48() {
+
+        Map<Type, Integer> resMap = menu.stream()
+                .collect(
+                        groupingBy(Dish::getType
+                                , summingInt(Dish::getCalories))
+                );
+
+        System.out.println(resMap);
+
+    }
+
+    public void exam49() {
+
+        Map<Type, Set<CalLevels>> collect = menu.stream().collect(
+                groupingBy(Dish::getType,
+                        mapping(
+                                dish -> {
+                            if (dish.getCalories() <= 400) return DIET;
+                            else if (dish.getCalories() <= 700) return NORMAL;
+                            else return FAT;
+                        }, Collectors.toSet() )
+                )
+        );
+
+        System.out.println(collect);
+
+    }
+
+    public void exam50() {
+
+        Map<Boolean, List<Dish>> collect = menu.stream()
+                .collect(
+                        partitioningBy(Dish::isVegetarian)
+                );
+
+        System.out.println(collect);
+
+    }
+
+    public void exam51() {
+        Map<Boolean, Map<Type, List<Dish>>> collect = menu.stream()
+                .collect(
+                        partitioningBy(Dish::isVegetarian
+                                , groupingBy(Dish::getType)
+                        )
+                );
+
+        System.out.println(collect);
+    }
+
+    public void exam52() {
+
+        Map<Boolean, Map<Type, Dish>> collect = menu.stream()
+                .collect(
+                        partitioningBy(Dish::isVegetarian
+                                , groupingBy(Dish::getType
+                                        , collectingAndThen(
+                                                maxBy(Comparator.comparing(Dish::getCalories))
+                                                , Optional::get
+                                        )
+                                )
+                        )
+                );
+
+        System.out.println(collect);
+    }
+
+    public void exam53() {
+        for(int i = 2; i < 100; ++i) System.out.println( "[ " + i + " : " + partionPrimes(i) + " ] ");
+    }
+
+    private Map<Boolean, List<Integer>> partionPrimes(int n) {
+        return IntStream.rangeClosed(2, n)
+                .boxed()
+                .collect(
+                        partitioningBy(this::isPrime)
+                );
+
+    }
+
+    private boolean isPrime(int candi) {
+        int candiRoot = (int) Math.sqrt((double) candi);
+        return IntStream.range(2, candi)
+                .noneMatch(i->candi%i == 0);
+    }
+
     public static void main(String[] args) {
-
         Start start = new Start();
-        start.exam43();
-
+        start.exam53();
     }
 
 }
